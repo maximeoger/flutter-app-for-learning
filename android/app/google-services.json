@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "131605923272",
+    "project_id": "mynotes-flutter-deb31",
+    "storage_bucket": "mynotes-flutter-deb31.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:131605923272:android:4b56ca496c32ef380a6cfd",
+        "android_client_info": {
+          "package_name": "com.wathever.mynotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "131605923272-p194hsm6f8r2pjhcdbrmk7buv7n9ahnm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAP7iRyCgLkUNwOVN7b0OfWKqVSN7n3Kw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "131605923272-p194hsm6f8r2pjhcdbrmk7buv7n9ahnm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
