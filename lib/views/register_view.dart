@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mynotes/firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/helpers/firebase_exception_handler.dart';
+import 'dart:developer' as devtools show log;
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -55,9 +55,10 @@ class _RegisterViewState extends State<RegisterView> {
                   final userCredential = await FirebaseAuth.instance
                       .createUserWithEmailAndPassword(
                           email: email, password: pwd);
-                  print(userCredential);
+                  devtools.log(userCredential.toString());
+                  Navigator.of(context).pushNamed(verifyEmailRoute);
                 } on FirebaseAuthException catch (e) {
-                  firebaseExceptionHandler(e);
+                  firebaseExceptionHandler(context, e);
                 }
               },
               child: const Text('Je crée mon compte')),
