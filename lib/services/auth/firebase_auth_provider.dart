@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart'
     show FirebaseAuth, FirebaseAuthException;
+import 'dart:developer' as devtools show log;
 
 class FirebaseAuthProvider implements AuthProvider {
   @override
@@ -62,6 +63,7 @@ class FirebaseAuthProvider implements AuthProvider {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       final user = currentUser;
+      devtools.log(user.toString());
       if (user != null) {
         return user;
       } else {
