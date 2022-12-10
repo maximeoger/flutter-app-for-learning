@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/helpers/firebase_exception_handler.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/services/auth/auth_helpers.dart';
 import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
@@ -49,16 +50,14 @@ class _LoginViewState extends State<LoginView> {
             TextButton(
                 onPressed: () async {
                   final email = _email.text;
-                  final pwd = _password.text;
+                  final password = _password.text;
 
                   try {
-                    final user = FirebaseAuth.instance.currentUser;
-                    final userCredential = await FirebaseAuth.instance
-                        .signInWithEmailAndPassword(
-                            email: email, password: pwd);
-                    devtools.log(userCredential.toString());
-                    devtools.log((user?.emailVerified).toString());
-                    if (user?.emailVerified ?? false) {
+                    final user = AuthService.firebase().currentUser;
+                    await AuthService.firebase()
+                        .logIn(email: email, password: password);
+
+                    if (user?.isEmailVerified ?? false) {
                       // user's email is verified
                       Navigator.pushNamedAndRemoveUntil(
                           context, notesRoute, (route) => false);
@@ -67,8 +66,12 @@ class _LoginViewState extends State<LoginView> {
                       Navigator.pushNamedAndRemoveUntil(
                           context, verifyEmailRoute, (route) => false);
                     }
-                  } on FirebaseAuthException catch (e) {
-                    firebaseExceptionHandler(context, e);
+                  } on UserNotFoundException {
+                    await showErrorDialog(context, 'User not found');
+                  } on WrongPasswordException {
+                    await showErrorDialog(context, 'Wrong credentials');
+                  } on GenericAuthException {
+                    await showErrorDialog(context, 'Authentication error');
                   }
                 },
                 child: const Text('Connexion')),
