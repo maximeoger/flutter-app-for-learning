@@ -4,6 +4,7 @@ import 'package:path_provider/path_provider.dart'
     show MissingPlatformDirectoryException, getApplicationDocumentsDirectory;
 import 'package:path/path.dart' show join;
 import 'package:mynotes/services/crud/crud_exceptions.dart';
+import 'package:mynotes/constants/sql.dart';
 
 class NotesService {
   /// Attributes -------
@@ -92,22 +93,24 @@ class NotesService {
       {required DatabaseNote note, required String text}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-
+    final updateTimestamp = DateTime.now().toString();
     // make sure that note exists
     await getNote(id: note.id);
 
     final updatesCount = await db.update(noteTable, {
       textColumn: text,
+      timestampColumn: updateTimestamp,
       isSyncedWithCloudColumn: 0,
     });
 
     if (updatesCount == 0) {
       throw CouldNotUpdateNote();
     } else {
-      final updateNote = await getNote(id: note.id);
-      _notes.removeWhere((note) => note.id == updateNote.id);
+      final updatedNote = await getNote(id: note.id);
+      _notes.removeWhere((note) => note.id == updatedNote.id);
+      _notes.add(updatedNote);
       _notesStreamController.add(_notes);
-      return updateNote;
+      return updatedNote;
     }
   }
 
@@ -115,7 +118,6 @@ class NotesService {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final notes = await db.query(noteTable);
-
     return notes.map((noteRow) => DatabaseNote.fromRow(noteRow));
   }
 
@@ -178,17 +180,23 @@ class NotesService {
     }
 
     // create the note
-    const text = '';
-    final noteId = await db.insert(noteTable,
-        {userIdColumn: owner.id, textColumn: text, isSyncedWithCloudColumn: 1});
+    final noteId = await db.insert(noteTable, {
+      userIdColumn: owner.id,
+      textColumn: '',
+      timestampColumn: '',
+      isSyncedWithCloudColumn: 1,
+    });
 
     final note = DatabaseNote(
       id: noteId,
       userId: owner.id,
-      text: text,
+      text: '',
       isSyncedWithCloud: true,
-      timestamp: '2022-12-19T23:20:56',
+      timestamp: '',
     );
+
+    _notes.add(note);
+    _notesStreamController.add(_notes);
 
     return note;
   }
@@ -282,8 +290,8 @@ class DatabaseNote {
 
   DatabaseNote.fromRow(Map<String, Object?> map)
       : id = map[idColumn] as int,
-        userId = map[userIdColumn] as int,
         text = map[textColumn] as String,
+        userId = map[userIdColumn] as int,
         timestamp = map[timestampColumn] as String,
         isSyncedWithCloud =
             (map[isSyncedWithCloudColumn] as int) == 1 ? true : false;
@@ -298,33 +306,3 @@ class DatabaseNote {
   @override
   int get hashCode => id.hashCode;
 }
-
-const dbName = 'notes.db';
-const noteTable = 'note';
-const userTable = 'user';
-const idColumn = "id";
-const emailColumn = "email";
-const userIdColumn = "user_id";
-const textColumn = "text";
-const timestampColumn = "timestamp";
-const isSyncedWithCloudColumn = "is_synced_with_cloud";
-
-const createUserTable = '''
-        CREATE TABLE IF NOT EXISTS "User" (
-          "id"	INTEGER NOT NULL,
-          "email"	TEXT NOT NULL,
-          PRIMARY KEY("id" AUTOINCREMENT)
-        );
-      ''';
-
-const createNoteTable = '''
-        CREATE TABLE IF NOT EXISTS "Note" (
-          "id"	INTEGER NOT NULL,
-          "user_id"	INTEGER,
-          "text"	TEXT,
-          "timestamp"	TEXT,
-          "is_synced_with_cloud"	INTEGER NOT NULL DEFAULT 0,
-          FOREIGN KEY("user_id") REFERENCES "User"("id"),
-          PRIMARY KEY("id" AUTOINCREMENT)
-        );
-      ''';

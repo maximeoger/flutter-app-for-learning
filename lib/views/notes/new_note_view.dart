@@ -29,7 +29,6 @@ class _NewNoteViewState extends State<NewNoteView> {
       return;
     }
     final text = _textController.text;
-
     await _notesService.updateNote(
       note: note,
       text: text,
@@ -91,7 +90,8 @@ class _NewNoteViewState extends State<NewNoteView> {
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 decoration: const InputDecoration(
-                    hintText: 'Ecrivez votre note ici...'),
+                  hintText: 'Ecrivez votre note ici...',
+                ),
               );
             default:
               return const CircularProgressIndicator();

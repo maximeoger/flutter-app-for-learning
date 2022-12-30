@@ -1,0 +1,287 @@
+@startuml
+set namespaceSeparator ::
+
+class "mynotes::enums::menu_actions.dart::MenuAction" {
+  +int index
+  {static} +List<MenuAction> values
+  {static} +MenuAction logout
+}
+
+"mynotes::enums::menu_actions.dart::MenuAction" o-- "mynotes::enums::menu_actions.dart::MenuAction"
+"dart::core::Enum" <|-- "mynotes::enums::menu_actions.dart::MenuAction"
+
+class "mynotes::firebase_options.dart::DefaultFirebaseOptions" {
+  {static} +FirebaseOptions web
+  {static} +FirebaseOptions android
+  {static} +FirebaseOptions ios
+  {static} +FirebaseOptions macos
+  {static} +FirebaseOptions currentPlatform
+}
+
+"mynotes::firebase_options.dart::DefaultFirebaseOptions" o-- "firebase_core_platform_interface::firebase_core_platform_interface.dart::FirebaseOptions"
+
+class "mynotes::main.dart::HomePage" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "mynotes::main.dart::HomePage"
+
+class "mynotes::views::login_view.dart::LoginView" {
+  +State<LoginView> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "mynotes::views::login_view.dart::LoginView"
+
+class "mynotes::views::login_view.dart::_LoginViewState" {
+  -TextEditingController _email
+  -TextEditingController _password
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"mynotes::views::login_view.dart::_LoginViewState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "mynotes::views::login_view.dart::_LoginViewState"
+
+class "mynotes::views::notes::notes_view.dart::NotesView" {
+  +State<NotesView> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "mynotes::views::notes::notes_view.dart::NotesView"
+
+class "mynotes::views::notes::notes_view.dart::_NotesViewState" {
+  -NotesService _notesService
+  +String userEmail
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"mynotes::views::notes::notes_view.dart::_NotesViewState" o-- "mynotes::services::crud::notes_service.dart::NotesService"
+"flutter::src::widgets::framework.dart::State" <|-- "mynotes::views::notes::notes_view.dart::_NotesViewState"
+
+class "mynotes::views::notes::new_note_view.dart::NewNoteView" {
+  +State<NewNoteView> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "mynotes::views::notes::new_note_view.dart::NewNoteView"
+
+class "mynotes::views::notes::new_note_view.dart::_NewNoteViewState" {
+  -DatabaseNote? _note
+  -NotesService _notesService
+  -TextEditingController _textController
+  +void initState()
+  -void _textControllerListener()
+  +Future<DatabaseNote> createNewNote()
+  -void _deleteNoteIfTextIsEmpty()
+  -void _saveNoteIfTextNotEmpty()
+  -void _setupTextControllerListener()
+  +void dispose()
+  +Widget build()
+}
+
+"mynotes::views::notes::new_note_view.dart::_NewNoteViewState" o-- "mynotes::services::crud::notes_service.dart::DatabaseNote"
+"mynotes::views::notes::new_note_view.dart::_NewNoteViewState" o-- "mynotes::services::crud::notes_service.dart::NotesService"
+"mynotes::views::notes::new_note_view.dart::_NewNoteViewState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "mynotes::views::notes::new_note_view.dart::_NewNoteViewState"
+
+class "mynotes::views::verify_email_view.dart::VerifyEmailView" {
+  +State<VerifyEmailView> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "mynotes::views::verify_email_view.dart::VerifyEmailView"
+
+class "mynotes::views::verify_email_view.dart::_VerifyEmailViewState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "mynotes::views::verify_email_view.dart::_VerifyEmailViewState"
+
+class "mynotes::views::register_view.dart::RegisterView" {
+  +State<RegisterView> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "mynotes::views::register_view.dart::RegisterView"
+
+class "mynotes::views::register_view.dart::_RegisterViewState" {
+  -TextEditingController _email
+  -TextEditingController _password
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"mynotes::views::register_view.dart::_RegisterViewState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "mynotes::views::register_view.dart::_RegisterViewState"
+
+class "mynotes::services::auth::auth_user.dart::AuthUser" {
+  +bool isEmailVerified
+  +String? email
+}
+
+abstract class "mynotes::services::auth::auth_provider.dart::AuthProvider" {
+  +AuthUser? currentUser
+  +Future<void> initialize()
+  +Future<AuthUser> logIn()
+  +Future<AuthUser> createUser()
+  +Future<void> logOut()
+  +Future<void> sendEmailVerification()
+}
+
+"mynotes::services::auth::auth_provider.dart::AuthProvider" o-- "mynotes::services::auth::auth_user.dart::AuthUser"
+
+class "mynotes::services::auth::auth_service.dart::AuthService" {
+  +AuthProvider provider
+  +AuthUser? currentUser
+  +Future<AuthUser> createUser()
+  +Future<AuthUser> logIn()
+  +Future<void> logOut()
+  +Future<void> sendEmailVerification()
+  +Future<void> initialize()
+}
+
+"mynotes::services::auth::auth_service.dart::AuthService" o-- "mynotes::services::auth::auth_provider.dart::AuthProvider"
+"mynotes::services::auth::auth_service.dart::AuthService" o-- "mynotes::services::auth::auth_user.dart::AuthUser"
+"mynotes::services::auth::auth_provider.dart::AuthProvider" <|-- "mynotes::services::auth::auth_service.dart::AuthService"
+
+class "mynotes::services::auth::firebase_auth_provider.dart::FirebaseAuthProvider" {
+  +AuthUser? currentUser
+  +Future<void> initialize()
+  +Future<AuthUser> createUser()
+  +Future<AuthUser> logIn()
+  +Future<void> logOut()
+  +Future<void> sendEmailVerification()
+}
+
+"mynotes::services::auth::firebase_auth_provider.dart::FirebaseAuthProvider" o-- "mynotes::services::auth::auth_user.dart::AuthUser"
+"mynotes::services::auth::auth_provider.dart::AuthProvider" <|-- "mynotes::services::auth::firebase_auth_provider.dart::FirebaseAuthProvider"
+
+class "mynotes::services::auth::auth_exceptions.dart::UserNotFoundException" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::auth::auth_exceptions.dart::UserNotFoundException"
+
+class "mynotes::services::auth::auth_exceptions.dart::WrongPasswordException" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::auth::auth_exceptions.dart::WrongPasswordException"
+
+class "mynotes::services::auth::auth_exceptions.dart::WeakPasswordException" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::auth::auth_exceptions.dart::WeakPasswordException"
+
+class "mynotes::services::auth::auth_exceptions.dart::EmailAlreadyInUseException" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::auth::auth_exceptions.dart::EmailAlreadyInUseException"
+
+class "mynotes::services::auth::auth_exceptions.dart::InvalidEmailAuthException" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::auth::auth_exceptions.dart::InvalidEmailAuthException"
+
+class "mynotes::services::auth::auth_exceptions.dart::GenericAuthException" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::auth::auth_exceptions.dart::GenericAuthException"
+
+class "mynotes::services::auth::auth_exceptions.dart::UserNotLoggedInAuthException" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::auth::auth_exceptions.dart::UserNotLoggedInAuthException"
+
+class "mynotes::services::crud::notes_service.dart::NotesService" {
+  -Database? _db
+  -List<DatabaseNote> _notes
+  -StreamController<List<DatabaseNote>> _notesStreamController
+  {static} -NotesService _shared
+  +Stream<List<DatabaseNote>> allNotes
+  -Future<void> _ensureDbIsOpen()
+  -Database _getDatabaseOrThrow()
+  +Future<void> open()
+  +Future<void> close()
+  +Future<DatabaseUser> getOrCreateUser()
+  -Future<void> _cacheNotes()
+  +Future<DatabaseNote> updateNote()
+  +Future<Iterable<DatabaseNote>> getAllNotes()
+  +Future<DatabaseNote> getNote()
+  +Future<int> deleteAllNotes()
+  +Future<void> deleteNote()
+  +Future<DatabaseNote> createNote()
+  +Future<DatabaseUser> getUser()
+  +Future<void> deleteUser()
+  +Future<DatabaseUser> createUser()
+}
+
+"mynotes::services::crud::notes_service.dart::NotesService" o-- "sqflite_common::sqlite_api.dart::Database"
+"mynotes::services::crud::notes_service.dart::NotesService" o-- "dart::async::StreamController<List<DatabaseNote>>"
+"mynotes::services::crud::notes_service.dart::NotesService" o-- "mynotes::services::crud::notes_service.dart::NotesService"
+"mynotes::services::crud::notes_service.dart::NotesService" o-- "dart::async::Stream<List<DatabaseNote>>"
+
+class "mynotes::services::crud::notes_service.dart::DatabaseUser" {
+  +int id
+  +String email
+  +int hashCode
+  +String toString()
+  +bool ==()
+}
+
+class "mynotes::services::crud::notes_service.dart::DatabaseNote" {
+  +int id
+  +int userId
+  +String text
+  +String timestamp
+  +bool isSyncedWithCloud
+  +int hashCode
+  +String toString()
+  +bool ==()
+}
+
+class "mynotes::services::crud::crud_exceptions.dart::DatabaseAlreadyOpenException" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::crud::crud_exceptions.dart::DatabaseAlreadyOpenException"
+
+class "mynotes::services::crud::crud_exceptions.dart::DatabaseIsNotOpen" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::crud::crud_exceptions.dart::DatabaseIsNotOpen"
+
+class "mynotes::services::crud::crud_exceptions.dart::UnableToGetDocumentsDirectory" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::crud::crud_exceptions.dart::UnableToGetDocumentsDirectory"
+
+class "mynotes::services::crud::crud_exceptions.dart::CouldNotDeleteUser" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::crud::crud_exceptions.dart::CouldNotDeleteUser"
+
+class "mynotes::services::crud::crud_exceptions.dart::CouldNotDeleteNote" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::crud::crud_exceptions.dart::CouldNotDeleteNote"
+
+class "mynotes::services::crud::crud_exceptions.dart::CouldNotFindUser" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::crud::crud_exceptions.dart::CouldNotFindUser"
+
+class "mynotes::services::crud::crud_exceptions.dart::CouldNotFindNote" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::crud::crud_exceptions.dart::CouldNotFindNote"
+
+class "mynotes::services::crud::crud_exceptions.dart::CouldNotUpdateNote" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::crud::crud_exceptions.dart::CouldNotUpdateNote"
+
+class "mynotes::services::crud::crud_exceptions.dart::UserAlreadyExists" {
+}
+
+"dart::core::Exception" <|-- "mynotes::services::crud::crud_exceptions.dart::UserAlreadyExists"
+
+
+@enduml
